@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/dfcreative/fps-indicator#readme",
   "dependencies": {
+    "percentile": "^1.2.0",
     "raf": "^3.2.0",
     "right-now": "^1.0.0",
     "to-css": "^1.2.1"

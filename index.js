@@ -7,6 +7,7 @@
 const raf = require('raf');
 const now = require('right-now');
 const css = require('to-css')
+const percentile = require('percentile');
 
 module.exports = fps;
 
@@ -17,6 +18,8 @@ function fps (opts) {
 
 	if (typeof opts === 'string') opts = {position: opts}
 	opts = opts || {};
+
+	const slowPercentile = opts.slowPercentile || 0
 
 	if (opts.container) {
 		if (typeof opts.container === 'string') {
@@ -108,6 +111,8 @@ function fps (opts) {
 	let values = opts.values || Array(this.canvas.width);
 	let period = opts.period || 1000;
 	let max = opts.max || 100;
+	let frames = []
+	let lastFrame = 0;
 
 	//enable update routine
 	let that = this;
@@ -115,9 +120,22 @@ function fps (opts) {
 		count++;
 		let t = now();
 
+		if (slowPercentile > 0) {
+			frames.push(t - lastFrame);
+			lastFrame = t;
+		}
+
 		if (t - lastTime > period) {
 			lastTime = t;
-			values.push(count / (max * period * 0.001));
+			let avgFrame = 60
+
+			if (slowPercentile > 0) {
+				avgFrame = (1000 / percentile(slowPercentile, frames)) / max
+			} else {
+				avgFrame = count / (max * period * 0.001)
+			}
+
+			values.push(avgFrame);
 			values = values.slice(-w);
 			count = 0;
 
@@ -130,6 +148,8 @@ function fps (opts) {
 			}
 
 			that.valueEl.innerHTML = (values[values.length - 1]*max).toFixed(1);
+
+			frames = []
 		}
 
 		raf(measure);
