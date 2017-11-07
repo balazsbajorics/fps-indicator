@@ -36,17 +36,19 @@ function fps (opts) {
 	//init fps
 	this.element = document.createElement('div');
 	this.element.classList.add('fps');
-	this.element.innerHTML = `
-		<div class="fps-bg"></div>
-		<canvas class="fps-canvas"></canvas>
-		<span class="fps-text">fps <span class="fps-value">60.0</span></span>
-	`;
+	
+	this.bgEl = document.createElement('div')
+	this.canvas = document.createElement('canvas')
+	this.textEl = document.createElement('span')
+	this.textEl.innerHTML = 'fps ' + (slowPercentile > 0 ? slowPercentile + ' percentile ' : '')
+	this.valueEl = document.createElement('span')
+	this.valueEl.innerHTML = 60.0
+	
 	this.container.appendChild(this.element);
-
-	this.canvas = this.element.querySelector('.fps-canvas');
-	this.textEl = this.element.querySelector('.fps-text');
-	this.valueEl = this.element.querySelector('.fps-value');
-	this.bgEl = this.element.querySelector('.fps-bg');
+	this.element.appendChild(this.bgEl)
+	this.element.appendChild(this.canvas)
+	this.element.appendChild(this.textEl)
+	this.textEl.appendChild(this.valueEl)
 
 	let style = opts.css || opts.style || ``
 	if (typeof style === 'object') style = css(style)
